@@ -14,34 +14,28 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); //need for parsing JSON data from requests
 
-let arr = [];
+let pokemon = [];
 
 // import pokemon
 async function fetchPokemon() {
-    let reqs = [],
+    let count = 1,
     name,
     habitat;
-    const response = await fetch("https://pokeapi.co/api/v2/pokemon-species?limit=151");
-    if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
-    };
-    const json = await response.json();
-    json.results.forEach(async entry => {
-        await fetch(entry.url)
-        .then(response => response.json())
-        .then(data => {
-            name = data.name;
-            habitat = data.habitat.name
-        });
+    while (count <= 151) {
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${count}`);
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        };
+        const json = await response.json();
+        name = json.name;
+        habitat = json.habitat.name;
         let obj = {
             name: name,
             habitat: habitat
         };
-        reqs.push(obj);
-        if (reqs.length === 151) {
-            arr = reqs;
-        };
-    });
+        pokemon.push(obj);
+        count++;
+    }
 };
 
 fetchPokemon();
@@ -49,8 +43,9 @@ fetchPokemon();
 //PAGE ROUTES
 app.get("/", async (request, response) => {
     // render the page
-    response.render("index");
-    console.log(arr);
+    let poke = pokemon;
+    // console.log(poke);
+    response.render("index", { title: "Pokemap", pokemon: poke});
   });
 
 //set up server listening

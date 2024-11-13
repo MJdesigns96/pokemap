@@ -2,3 +2,7 @@ extends layout
 
 block main-content 
     h1 Hello World!
+    div
+        each poke in pokemon 
+            h2 Name: #{poke.name}
+            p Habitat: #{poke.habitat}
