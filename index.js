@@ -14,10 +14,43 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); //need for parsing JSON data from requests
 
+let arr = [];
+
+// import pokemon
+async function fetchPokemon() {
+    let reqs = [],
+    name,
+    habitat;
+    const response = await fetch("https://pokeapi.co/api/v2/pokemon-species?limit=151");
+    if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+    };
+    const json = await response.json();
+    json.results.forEach(async entry => {
+        await fetch(entry.url)
+        .then(response => response.json())
+        .then(data => {
+            name = data.name;
+            habitat = data.habitat.name
+        });
+        let obj = {
+            name: name,
+            habitat: habitat
+        };
+        reqs.push(obj);
+        if (reqs.length === 151) {
+            arr = reqs;
+        };
+    });
+};
+
+fetchPokemon();
+
 //PAGE ROUTES
 app.get("/", async (request, response) => {
     // render the page
-    response.render("index" );
+    response.render("index");
+    console.log(arr);
   });
 
 //set up server listening
