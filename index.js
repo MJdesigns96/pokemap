@@ -45,7 +45,7 @@ app.get("/", async (request, response) => {
     // render the page
     let poke = pokemon;
     // console.log(poke);
-    response.render("index", { title: "Pokemap", pokemon: poke});
+    response.render("index", { title: "Pokemap", pokemon: poke });
   });
 
 //set up server listening
